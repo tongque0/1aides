@@ -1,0 +1,26 @@
+
+{
+    "node_name": "consul-server",
+    "server": true,
+    "bootstrap_expect": 1,
+    "ui_config": {
+      "enabled": true
+    },
+    "data_dir": "/consul/data",
+    "addresses": {
+      "http": "0.0.0.0"
+    },
+    "acl": {
+      "enabled": true,
+      "default_policy": "deny",
+      "enable_token_persistence": true,
+      "tokens": {
+        "initial_management": "314b2f62-0cca-4e00-8390-17e3dacffed1",
+        "agent": "314b2f62-0cca-4e00-8390-17e3dacffed1"
+      }
+    },
+    "peering": {
+      "enabled": false
+    }
+  }
+
