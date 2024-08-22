@@ -1,9 +1,9 @@
 package generator
 
 import (
-	"1aides/pkg/generator/memory"
-	"1aides/pkg/generator/modhub"
-	"1aides/pkg/generator/msgchan"
+	"1aides/pkg/components/generator/memory"
+	"1aides/pkg/components/generator/modhub"
+	"1aides/pkg/components/generator/msgchan"
 
 	"github.com/eatmoreapple/openwechat"
 )
@@ -29,11 +29,10 @@ func NewGenerator(msg *openwechat.Message, options ...func(*Generator)) *Generat
 }
 
 // Generate 生成消息
-func (g *Generator) Generate() (string, error) {
+func (g *Generator) Generate() {
 	g.Model.Gen(g.MsgChan, &g.Memory)
 
 	g.MsgChan.Flush()
-	return "生成消息完毕", nil
 }
 
 // DefaultModel 默认模型

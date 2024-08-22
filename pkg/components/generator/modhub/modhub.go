@@ -1,8 +1,8 @@
 package modhub
 
 import (
-	"1aides/pkg/generator/memory"
-	"1aides/pkg/generator/msgchan"
+	"1aides/pkg/components/generator/memory"
+	"1aides/pkg/components/generator/msgchan"
 )
 
 type ModelType string

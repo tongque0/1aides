@@ -2,8 +2,8 @@ package message
 
 import (
 	"1aides/pkg/common/config"
-	"1aides/pkg/generator"
-	"1aides/pkg/generator/modhub"
+	"1aides/pkg/components/generator"
+	"1aides/pkg/components/generator/modhub"
 	"1aides/pkg/log/zlog"
 	"os"
 
@@ -20,18 +20,17 @@ func gen(msg *openwechat.Message) {
 
 	cfg, err := config.NewConsulConfig(consulAddress)
 	if err != nil {
-		zlog.Error("创建配置管理器失败", zap.Any("error", err))
+		zlog.Error("创建配置管理器失败", zap.Error(err))
 		return
 	}
 
-	// 从Consul加载配置
+	// 从配置中心加载模型配置
 	var model modhub.Model
 	err = cfg.LoadConfig("1aides/model", &model)
 	if err != nil {
-		zlog.Error("加载配置失败", zap.Any("error", err))
+		zlog.Error("加载配置失败", zap.Error(err))
 		return
 	}
-	zap.S().Infof("Loaded model config: %+v", model)
 
 	// 使用加载的模型配置创建生成器实例
 	gen := generator.NewGenerator(msg, generator.WithModel(model))

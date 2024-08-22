@@ -15,7 +15,7 @@ services:
     restart: always
 
   consul:
-    image: consul:1.15.4
+    image: hub.atomgit.com/amd64/consul:1.15.4
     command:
       - agent
       - -server
