@@ -1,8 +1,8 @@
 package memory
 
 type Memory struct {
-	Memory  string              // 记忆内容
-	MsgList map[string][]string // 消息列表
+	Memory  string // 记忆内容
+	MsgList []map[string]string
 }
 
 func (m *Memory) GetMemory() string {
@@ -14,12 +14,13 @@ func (m *Memory) SetMemory(memory string) {
 }
 
 func (m *Memory) AddMsgList(role string, msg string) {
-	if m.MsgList == nil {
-		m.MsgList = make(map[string][]string)
+	message := map[string]string{
+		"role":    role,
+		"content": msg,
 	}
-	m.MsgList[role] = append(m.MsgList[role], msg)
+	m.MsgList = append(m.MsgList, message)
 }
 
-func (m *Memory) GetMsgList(role string) []string {
-	return m.MsgList[role]
+func (m *Memory) GetMsgList() []map[string]string {
+	return m.MsgList
 }

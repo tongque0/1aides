@@ -7,9 +7,10 @@ import (
 )
 
 type MsgChan struct {
-	builder   strings.Builder
-	limitFunc func(*strings.Builder) bool
-	Msg       *openwechat.Message
+	builder       strings.Builder
+	recordBuilder strings.Builder // 记录用户的输入
+	limitFunc     func(*strings.Builder) bool
+	Msg           *openwechat.Message
 }
 
 func NewMsgChan(limitFunc func(*strings.Builder) bool) *MsgChan {
@@ -40,6 +41,7 @@ func (m *MsgChan) Flush() {
 
 func (m *MsgChan) sendTextData() {
 	if m.Msg != nil && m.builder.Len() > 0 {
+		m.recordBuilder.WriteString(m.builder.String())
 		m.Msg.ReplyText(m.builder.String())
 		m.builder.Reset()
 	}
@@ -51,4 +53,8 @@ func (m *MsgChan) Show() string {
 
 func (m *MsgChan) Consume(msg *openwechat.Message) {
 	m.Msg = msg
+}
+
+func (m *MsgChan) GetRecords() string {
+	return m.recordBuilder.String()
 }

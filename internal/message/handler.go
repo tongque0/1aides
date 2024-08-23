@@ -16,7 +16,7 @@ func HandleMessage(msg *openwechat.Message) {
 
 	if auth.Auth(msg) {
 		if msg.IsText() {
-			gen(msg)
+			go gen(msg)
 		}
 	}
 }

@@ -61,7 +61,7 @@ func GenerateActivationCode(command string, msg *openwechat.Message) {
 
 		codes = append(codes, code)
 	}
-	msg.ReplyText("成功生成激活码:\n " + strings.Join(codes, ",\n"))
+	msg.ReplyText("成功生成激活码:\n" + strings.Join(codes, "\n"))
 }
 
 // VerifyActivationCode 验证验证码
@@ -148,11 +148,15 @@ func generateRandomCode() string {
 	// 获取当前时间的时间戳（精确到毫秒）
 	timestamp := time.Now().UnixNano() / 1e6
 
+	// 将时间戳转换为16进制字符串，并截取后4位
+	timestampHex := fmt.Sprintf("%x", timestamp)
+	truncatedTimestamp := timestampHex[len(timestampHex)-4:]
+
 	// 生成一个随机数，确保ID的唯一性
 	randomPart := rand.Int63() & 0xFFFFFF // 生成24位的随机数部分
 
-	// 将时间戳和随机部分拼接成一个16进制字符串
-	id := fmt.Sprintf("%x%x", timestamp, randomPart)
+	// 将固定前缀、截取后的时间戳和随机部分拼接成一个16进制字符串
+	id := fmt.Sprintf("1aides%s%x", truncatedTimestamp, randomPart)
 
 	return id
 }

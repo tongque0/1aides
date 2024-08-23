@@ -29,10 +29,12 @@ func NewGenerator(msg *openwechat.Message, options ...func(*Generator)) *Generat
 }
 
 // Generate 生成消息
-func (g *Generator) Generate() {
+func (g *Generator) Generate() string {
 	g.Model.Gen(g.MsgChan, &g.Memory)
 
 	g.MsgChan.Flush()
+
+	return g.MsgChan.GetRecords()
 }
 
 // DefaultModel 默认模型
@@ -44,7 +46,7 @@ func DefaultModel() modhub.Model {
 func DefaultMemory() memory.Memory {
 	return memory.Memory{
 		Memory:  "这是你的记忆，作为一个机器人，你的开发者，为你赋予了记忆部分，此记忆会随着你跟我们的相处而不断地增长,该记忆会影响你的回答，所以请你好好的记住这些信息。",
-		MsgList: make(map[string][]string),
+		MsgList: make([]map[string]string, 0),
 	}
 }
 

@@ -14,11 +14,14 @@ import (
 
 // Friend 定义好友信息的结构体
 type Friend struct {
-	ID            string `bson:"id"`
-	NickName      string `bson:"nick_name"`
-	RemarkName    string `bson:"remark_name"`
-	HasPermission bool   `bson:"has_permission"` // 权限字段
+	ID            string              `bson:"id"`
+	HasPermission bool                `bson:"has_permission"`
+	NickName      string              `bson:"nick_name"`
+	RemarkName    string              `bson:"remark_name"`
+	Memory        string              `bson:"memory"`
+	MsgList       []map[string]string `bson:"msglist"`
 }
+
 
 // InitFriendDB 初始化好友数据库
 func InitFriendDB() {
