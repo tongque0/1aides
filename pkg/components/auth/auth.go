@@ -42,9 +42,5 @@ func Auth(msg *openwechat.Message) bool {
 		msg.ReplyText("您没有权限使用此功能,请先申请激活码进行激活")
 	}
 
-	if sender.IsGroup() && hasPermission {
-
-	}
-
 	return hasPermission
 }
