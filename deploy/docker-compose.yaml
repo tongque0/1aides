@@ -12,7 +12,7 @@ services:
       - CONSUL_ADDRESS=http://consul:8500
       - MONGO_USER=tongque
       - MONGO_PASSWORD=Y2hlbjA0MTY=
-      - MONGO_HOST=mongodb://mongo:27017
+      - MONGO_HOST=mongo:27017
     depends_on:
       - consul
       - mongo

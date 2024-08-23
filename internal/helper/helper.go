@@ -41,6 +41,11 @@ func IsHelp(msg *openwechat.Message) bool {
 	return match
 }
 
+func GroupRule(msg *openwechat.Message) bool {
+
+	return false
+}
+
 // Helper 处理匹配到的命令
 func Helper(msg *openwechat.Message) {
 	// 获取命令内容
