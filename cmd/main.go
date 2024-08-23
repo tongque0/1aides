@@ -1,6 +1,8 @@
 package main
 
 import (
+	"1aides/internal/friends"
+	"1aides/internal/groups"
 	"1aides/internal/message"
 	"1aides/pkg/components/bot"
 	"1aides/pkg/log/zlog"
@@ -22,6 +24,8 @@ func main() {
 		zlog.Error("登陆失败", zap.Error(err))
 		return
 	}
+	friends.InitFriendDB()
+	groups.InitGroupsDB()
 
 	// 阻塞主goroutine, 直到发生异常或者用户主动退出
 	bot.Block()

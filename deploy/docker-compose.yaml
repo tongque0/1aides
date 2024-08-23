@@ -10,8 +10,11 @@ services:
       - "8080:8080"
     environment:
       - CONSUL_ADDRESS=http://consul:8500
+      - MONGO_USER=tongque
+      - MONGO_PASSWORD=Y2hlbjA0MTY=
     depends_on:
       - consul
+      - mongo
     restart: always
 
   consul:
@@ -27,4 +30,15 @@ services:
       - "8500:8500"
     volumes:
       - D:\volumes\consul:/consul/data
+    restart: always
+
+  mongo:
+    image: hub.atomgit.com/amd64/mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=tongque
+      - MONGO_INITDB_ROOT_PASSWORD=Y2hlbjA0MTY=
+    volumes:
+      - D:\volumes\mongo:/data/db
     restart: always
