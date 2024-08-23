@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,39 +24,56 @@ type Activation struct {
 }
 
 // GenerateActivationCode 生成随机验证码并保存到数据库
-func GenerateActivationCode() string {
+func GenerateActivationCode(command string, msg *openwechat.Message) {
+	// 从命令字符串中提取参数
+	parts := strings.Fields(command)
+	var nums int
+
+	// 检查是否有指定数量的参数
+	if len(parts) >= 4 {
+		// 将字符串转换为整数
+		num, err := strconv.Atoi(parts[3])
+		if err != nil {
+			zlog.Error("无效的数量参数", zap.Error(err))
+		}
+		nums = num
+	} else {
+		nums = 1
+	}
+
 	collection := db.GetMongoDB().Collection("activation")
+	var codes []string
 
-	// 生成随机验证码
-	code := generateRandomCode()
+	for i := 0; i < nums; i++ {
+		// 生成随机验证码
+		code := generateRandomCode()
 
-	activation := Activation{
-		Code:       code,
-		IsVerified: false,
-		CreatedAt:  time.Now(),
+		activation := Activation{
+			Code:       code,
+			IsVerified: false,
+			CreatedAt:  time.Now(),
+		}
+
+		_, err := collection.InsertOne(context.TODO(), activation)
+		if err != nil {
+			zlog.Error("插入验证码失败", zap.Error(err))
+		}
+
+		codes = append(codes, code)
 	}
-
-	_, err := collection.InsertOne(context.TODO(), activation)
-	if err != nil {
-		zlog.Error("插入验证码失败", zap.Error(err))
-		return ""
-	}
-
-	return code
+	msg.ReplyText("成功生成激活码:\n " + strings.Join(codes, ",\n"))
 }
 
 // VerifyActivationCode 验证验证码
-func VerifyActivationCode(command string, msg *openwechat.Message) bool {
+func VerifyActivationCode(command string, msg *openwechat.Message) {
 	sender, err := msg.Sender()
 	if err != nil {
 		zlog.Error("Failed to get sender:", zap.Error(err))
-		return false
 	}
 	// 从命令字符串中提取验证码
 	parts := strings.Fields(command)
 	if len(parts) < 3 {
 		zlog.Error("Invalid command format")
-		return false
 	}
 	code := parts[2]
 
@@ -67,7 +85,6 @@ func VerifyActivationCode(command string, msg *openwechat.Message) bool {
 	err = collection.FindOne(context.TODO(), filter).Decode(&activation)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return false
 		}
 		zlog.Error("Failed to find activation code:", zap.Error(err))
 	}
@@ -88,7 +105,7 @@ func VerifyActivationCode(command string, msg *openwechat.Message) bool {
 		zlog.Error("Failed to update user permission:", zap.Error(err))
 	}
 
-	return true
+	msg.ReplyText("激活成功！")
 }
 
 // updateUserPermission 更新用户权限

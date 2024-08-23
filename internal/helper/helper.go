@@ -15,15 +15,14 @@ USAGE:
    aides [command]
 
 COMMANDS:
-   help        Show this help message
+   help        帮助手册
 
-   open        Activate the service
+   active 	   激活服务
+		Example: aides active [激活码]
 
-   close       Deactivate the service
+   close       暂停服务
 
-   status      Show the status of the service
-
-   restart     Restart the service
+   set		   设置服务
 
 
 GLOBAL OPTIONS:
@@ -53,10 +52,8 @@ func Helper(msg *openwechat.Message) {
 		VerifyActivationCode(command, msg)
 	case strings.HasPrefix(command, "aides close"):
 		msg.ReplyText("成功关闭服务")
-	case strings.HasPrefix(command, "aides status"):
-		msg.ReplyText("服务当前状态：运行中")
-	case strings.HasPrefix(command, "aides restart"):
-		adminCmd(command, msg)
+	case strings.HasPrefix(command, "aides set"):
+		setCmd(command, msg)
 	case strings.HasPrefix(command, "aides admin"):
 		adminCmd(command, msg)
 	default:
@@ -69,8 +66,17 @@ func adminCmd(command string, msg *openwechat.Message) {
 	case strings.HasPrefix(command, "aides admin help"):
 		msg.ReplyText(adminlist)
 	case strings.HasPrefix(command, "aides admin gencode"):
-		msg.ReplyText(GenerateActivationCode())
+		GenerateActivationCode(command, msg)
 	default:
 		msg.ReplyText(adminlist)
+	}
+}
+
+func setCmd(command string, msg *openwechat.Message) {
+	switch {
+	case strings.HasPrefix(command, "aides set prompt"):
+		msg.ReplyText("服务当前状态：运行中")
+	default:
+		msg.ReplyText("服务当前状态：运行中")
 	}
 }
