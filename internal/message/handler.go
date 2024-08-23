@@ -10,7 +10,7 @@ import (
 func HandleMessage(msg *openwechat.Message) {
 
 	if helper.IsHelp(msg) {
-		helper.Helper(msg)
+		go helper.Helper(msg)
 		return
 	}
 

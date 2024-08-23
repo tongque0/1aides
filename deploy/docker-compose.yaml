@@ -5,13 +5,14 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
-    image: 1aides:latest
+    image: serverless-100026543835-docker.pkg.coding.net/1aides/1aides/1aides:latest
     ports:
       - "8080:8080"
     environment:
       - CONSUL_ADDRESS=http://consul:8500
       - MONGO_USER=tongque
       - MONGO_PASSWORD=Y2hlbjA0MTY=
+      - MONGO_HOST=mongodb://mongo:27017
     depends_on:
       - consul
       - mongo
