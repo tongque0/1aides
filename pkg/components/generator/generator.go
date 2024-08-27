@@ -36,7 +36,12 @@ func (g *Generator) Generate() string {
 
 	return g.MsgChan.GetRecords()
 }
+// Generate 生成消息
+func (g *Generator) GenMemory() string {
+	g.Model.GenMemory(g.MsgChan, &g.Memory)
 
+	return g.MsgChan.GetRecords()
+}
 // DefaultModel 默认模型
 func DefaultModel() modhub.Model {
 	return modhub.NewModel(modhub.GPT, nil) // Use default configuration

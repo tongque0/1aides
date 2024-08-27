@@ -65,6 +65,7 @@ func gen(msg *openwechat.Message) {
 	gen := generator.NewGenerator(msg, generator.WithModel(model), generator.WithMemory(memory))
 
 	result := gen.Generate()
+	//截止此处，所有生成的消息已经发送了，下面是对数据库等内容进行的更新操作
 	// 记录日志
 	zlog.Info("success",
 		zap.String("模型类型", model.Config.Model),
@@ -84,8 +85,8 @@ func gen(msg *openwechat.Message) {
 		"content": result,
 	})
 	// 检查 MsgList 的长度和轮数
-	const maxChars = 4000
-	const maxRounds = 10
+	const maxChars = 8888
+	const maxRounds = 20
 	totalChars := 0
 	for _, entry := range memory.MsgList {
 		totalChars += len(entry["content"])
@@ -94,14 +95,11 @@ func gen(msg *openwechat.Message) {
 	// 如果超过限制，生成新的记忆，并删除旧的对话
 	if totalChars > maxChars || len(memory.MsgList) > maxRounds*2 {
 		// 使用大模型生成新的记忆
-		// newMemory := generateMemoryFromMsgList(memory.MsgList)
-
+		newMemory := gen.GenMemory()
 		// 更新 memory
-		memory.Memory = "新的记忆"
-
-		// 删除旧的 5 轮对话（10 条消息）
-		if len(memory.MsgList) > 20 {
-			memory.MsgList = memory.MsgList[10:]
+		memory.Memory = newMemory
+		if len(memory.MsgList) > maxRounds {
+			memory.MsgList = memory.MsgList[len(memory.MsgList)/2:]
 		}
 	}
 	update := bson.M{
@@ -114,5 +112,5 @@ func gen(msg *openwechat.Message) {
 	if err != nil {
 		zlog.Error("更新 memory 和 msglist 失败", zap.Error(err))
 	}
-	zlog.Info("更新 memory 和 msglist 成功", zap.String("ID", sender.ID()))
+	zlog.Info("更新 memory 和 msglist 成功", zap.String("ID", sender.ID()), zap.String("更新后记忆:", memory.Memory))
 }

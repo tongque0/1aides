@@ -8,7 +8,7 @@ import (
 
 type MsgChan struct {
 	builder       strings.Builder
-	recordBuilder strings.Builder // 记录用户的输入
+	recordBuilder strings.Builder // 记录生成的内容
 	limitFunc     func(*strings.Builder) bool
 	Msg           *openwechat.Message
 }
@@ -30,13 +30,18 @@ func defaultLimitFunc(b *strings.Builder) bool {
 
 func (m *MsgChan) AddMessage(msg string) {
 	m.builder.WriteString(msg)
-	if m.limitFunc(&m.builder) {
+	if m.limitFunc(&m.builder) && m.Msg != nil {
 		m.sendTextData()
 	}
 }
-
+func (m *MsgChan) AddMemory(msg string) {
+	m.recordBuilder.Reset()
+	m.recordBuilder.WriteString(msg)
+}
 func (m *MsgChan) Flush() {
-	m.sendTextData()
+	if m.Msg != nil {
+		m.sendTextData()
+	}
 }
 
 func (m *MsgChan) sendTextData() {
@@ -57,4 +62,8 @@ func (m *MsgChan) Consume(msg *openwechat.Message) {
 
 func (m *MsgChan) GetRecords() string {
 	return m.recordBuilder.String()
+}
+
+func (m *MsgChan) ClearRecords() {
+	m.recordBuilder.Reset()
 }

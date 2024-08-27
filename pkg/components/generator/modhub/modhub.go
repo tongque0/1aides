@@ -59,3 +59,14 @@ func (m *Model) Gen(msgchan *msgchan.MsgChan, mermory *memory.Memory) {
 		// do something
 	}
 }
+
+func (m *Model) GenMemory(msgchan *msgchan.MsgChan, memory *memory.Memory) {
+	switch m.Type {
+	case GPT:
+		m.genMemoryForGPT(msgchan, memory)
+	case BERT:
+		// do something
+	case T5:
+		// do something
+	}
+}
