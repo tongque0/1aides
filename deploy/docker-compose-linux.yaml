@@ -12,11 +12,10 @@ services:
       - MONGO_PASSWORD=Y2hlbjA0MTY=
       - MONGO_HOST=mongo:27017
     volumes:
-      - D:\volumes\1aides\logs:/logs
+      - /opt/volumes/1aides/logs:/logs
     depends_on:
       - consul
       - mongo
-
     restart: always
 
   consul:
@@ -31,7 +30,7 @@ services:
     ports:
       - "8500:8500"
     volumes:
-      - D:\volumes\consul:/consul/data
+      - /opt/volumes/consul:/consul/data
     restart: always
 
   mongo:
@@ -42,5 +41,5 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=tongque
       - MONGO_INITDB_ROOT_PASSWORD=Y2hlbjA0MTY=
     volumes:
-      - D:\volumes\mongo:/data/db
+      - /opt/volumes/mongo:/data/db
     restart: always
