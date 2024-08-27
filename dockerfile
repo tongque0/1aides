@@ -34,4 +34,4 @@ ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV SSL_CERT_DIR=/etc/ssl/certs
 
 # 运行应用
-CMD ["/1aides"]
+CMD ["/app/1aides"]
