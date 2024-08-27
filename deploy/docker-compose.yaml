@@ -13,9 +13,12 @@ services:
       - MONGO_USER=tongque
       - MONGO_PASSWORD=Y2hlbjA0MTY=
       - MONGO_HOST=mongo:27017
+    volumes:
+      - D:\volumes\1aides\logs:/app/logs
     depends_on:
       - consul
       - mongo
+
     restart: always
 
   consul:

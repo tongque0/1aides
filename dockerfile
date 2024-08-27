@@ -27,7 +27,7 @@ FROM scratch
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 # 从builder阶段复制可执行文件到根目录并重新命名为1aides
-COPY --from=builder /app/cmd/1aides /1aides
+COPY --from=builder /app/cmd/1aides /app/1aides
 
 # 设置环境变量以确保应用使用正确的CA证书路径
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
