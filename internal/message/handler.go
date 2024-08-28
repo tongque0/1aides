@@ -20,3 +20,8 @@ func HandleMessage(msg *openwechat.Message) {
 		}
 	}
 }
+
+func HandleUUID(uuid string) string {
+	qrcodeUrl := openwechat.GetQrcodeUrl(uuid)
+	return qrcodeUrl
+}

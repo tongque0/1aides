@@ -7,31 +7,15 @@ services:
       dockerfile: Dockerfile
     image: serverless-100026543835-docker.pkg.coding.net/1aides/1aides/1aides:latest
     environment:
-      - CONSUL_ADDRESS=http://consul:8500
+      - TEMPLATE_PATH=./templates
+      - STATIC_PATH=./static
       - MONGO_USER=tongque
       - MONGO_PASSWORD=Y2hlbjA0MTY=
       - MONGO_HOST=mongo:27017
     volumes:
       - D:\volumes\1aides\logs:/logs
     depends_on:
-      - consul
       - mongo
-
-    restart: always
-
-  consul:
-    image: hub.atomgit.com/amd64/consul:1.15.4
-    command:
-      - agent
-      - -server
-      - -bootstrap-expect=1
-      - -ui
-      - -client=0.0.0.0
-      - -data-dir=/consul/data
-    ports:
-      - "8500:8500"
-    volumes:
-      - D:\volumes\consul:/consul/data
     restart: always
 
   mongo:

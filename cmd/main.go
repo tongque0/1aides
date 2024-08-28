@@ -1,32 +1,44 @@
 package main
 
 import (
-	"1aides/internal/friends"
-	"1aides/internal/groups"
+	"1aides/frontend/services/routes"
 	"1aides/internal/message"
 	"1aides/pkg/components/bot"
-	"1aides/pkg/log/zlog"
+	"os"
 
 	"github.com/eatmoreapple/openwechat"
-	"go.uber.org/zap"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	bot := bot.WxBot
 
-	// 注册消息处理函数
-	bot.MessageHandler = message.HandleMessage
-	// 注册登陆二维码回调
-	bot.UUIDCallback = openwechat.PrintlnQrcodeUrl
+	router := gin.Default()
 
-	// 登陆
-	if err := bot.Login(); err != nil {
-		zlog.Error("登陆失败", zap.Error(err))
-		return
+	templatePath := os.Getenv("TEMPLATE_PATH")
+	staticPath := os.Getenv("STATIC_PATH")
+
+	if templatePath == "" {
+		templatePath = "../frontend/templates/*" // 默认值，适用于开发环境
 	}
-	friends.InitFriendDB()
-	groups.InitGroupsDB()
+	if staticPath == "" {
+		staticPath = "../frontend/static" // 默认值，适用于开发环境
+	}
+
+	routes.SetupRoutes(router)
+
+	bot.WxBot.MessageHandler = message.HandleMessage
+	// 注册登陆二维码回调
+	bot.WxBot.UUIDCallback = openwechat.PrintlnQrcodeUrl
+
+	// // 登陆
+	// if err := bot.WxBot.Login(); err != nil {
+	// 	zlog.Error("登陆失败", zap.Error(err))
+	// 	return
+	// }
+	// friends.InitFriendDB()
+	// groups.InitGroupsDB()
 
 	// 阻塞主goroutine, 直到发生异常或者用户主动退出
-	bot.Block()
+	// bot.WxBot.Block()
+	router.Run(":8999")
 }
