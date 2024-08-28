@@ -7,10 +7,23 @@ import (
 	"os"
 	"sync"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 )
+
+type Config struct {
+	Model   string `bson:"model"`
+	ApiKey  string `bson:"apiKey"`
+	BaseURL string `bson:"baseURL"`
+	Prompt  string `bson:"prompt"`
+}
+
+type GPTData struct {
+	Type   string `bson:"type"`
+	Config Config `bson:"config"`
+}
 
 var (
 	MongoDB *mongo.Database
@@ -47,6 +60,9 @@ func NewMongoDB() {
 
 		// 初始化全局的MongoDB对象
 		MongoDB = client.Database("aides")
+
+		// 检查并初始化数据表和数据
+		ensureData(MongoDB)
 	})
 }
 
@@ -64,4 +80,34 @@ func getEnv(key, defaultValue string) string {
 		return value
 	}
 	return defaultValue
+}
+
+// ensureData 检查并初始化数据表和数据
+func ensureData(db *mongo.Database) {
+	collectionName := "models"
+	collection := db.Collection(collectionName)
+
+	// 检查集合中的文档数量
+	count, err := collection.CountDocuments(context.TODO(), bson.D{})
+	if err != nil {
+		zlog.Fatal("无法获取数据表信息", zap.Error(err))
+	}
+
+	// 如果集合为空，初始化数据
+	if count < 1 {
+		initialData := GPTData{
+			Type: "GPT",
+			Config: Config{
+				Model:   "gpt-4o-mini",
+				ApiKey:  "sk-29sMaKDD5aBgDtyx02014694972846Cc8c8b9fEb18192532",
+				BaseURL: "https://prime.zetatechs.com/v1",
+				Prompt:  "你的身份是一位微信消息机器人，你的开发者是同阙。你可以回复任何你想回复的内容，但是要有逻辑。",
+			},
+		}
+		_, err := collection.InsertOne(context.TODO(), initialData)
+		if err != nil {
+			zlog.Fatal("无法初始化数据", zap.Error(err))
+		}
+		zlog.Info("数据表已初始化", zap.String("collection", collectionName))
+	}
 }

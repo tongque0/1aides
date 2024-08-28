@@ -2,14 +2,12 @@ package message
 
 import (
 	"1aides/internal/friends"
-	"1aides/pkg/common/config"
 	"1aides/pkg/components/db"
 	"1aides/pkg/components/generator"
 	"1aides/pkg/components/generator/memory"
 	"1aides/pkg/components/generator/modhub"
 	"1aides/pkg/log/zlog"
 	"context"
-	"os"
 
 	"github.com/eatmoreapple/openwechat"
 	"go.mongodb.org/mongo-driver/bson"
@@ -22,35 +20,28 @@ func gen(msg *openwechat.Message) {
 	if err != nil {
 		return
 	}
-	consulAddress := os.Getenv("CONSUL_ADDRESS")
-	if consulAddress == "" {
-		consulAddress = "127.0.0.1:8500"
-	}
-
-	cfg, err := config.NewConsulConfig(consulAddress)
-	if err != nil {
-		zlog.Error("创建配置管理器失败", zap.Error(err))
-		return
-	}
 
 	// 从配置中心加载模型配置
 	var model modhub.Model
-	err = cfg.LoadConfig("1aides/model", &model)
+	modelctl := db.GetMongoDB().Collection("models")
+	filter := bson.M{"type": "GPT"}
+	err = modelctl.FindOne(context.TODO(), filter).Decode(&model)
 	if err != nil {
 		zlog.Error("加载配置失败", zap.Error(err))
+		msg.ReplyText("模型配置加载失败")
 		return
 	}
 	// 从mongoDB中加载记忆内容
 	var memory memory.Memory
-	var collection *mongo.Collection
+	var memoryctl *mongo.Collection
 	if sender.IsGroup() {
-		collection = db.GetMongoDB().Collection("groups")
+		memoryctl = db.GetMongoDB().Collection("groups")
 	} else {
-		collection = db.GetMongoDB().Collection("friends")
+		memoryctl = db.GetMongoDB().Collection("friends")
 	}
-	filter := bson.M{"id": sender.ID()}
+	filter = bson.M{"id": sender.ID()}
 	var friend friends.Friend
-	err = collection.FindOne(context.TODO(), filter).Decode(&friend)
+	err = memoryctl.FindOne(context.TODO(), filter).Decode(&friend)
 	if err != nil {
 		zlog.Warn("未找到对应的好友记录", zap.String("ID", sender.ID()), zap.Error(err))
 		friend = friends.Friend{
@@ -108,7 +99,7 @@ func gen(msg *openwechat.Message) {
 			"msglist": memory.MsgList,
 		},
 	}
-	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	_, err = memoryctl.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		zlog.Error("更新 memory 和 msglist 失败", zap.Error(err))
 	}
