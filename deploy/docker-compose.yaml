@@ -6,11 +6,13 @@ services:
       context: ..
       dockerfile: Dockerfile
     image: serverless-100026543835-docker.pkg.coding.net/1aides/1aides/1aides:latest
+    ports:
+      - "8999:8999"
     environment:
       - TEMPLATE_PATH=./templates
       - STATIC_PATH=./static
-      - MONGO_USER=tongque
-      - MONGO_PASSWORD=Y2hlbjA0MTY=
+      - MONGO_USER=aides
+      - MONGO_PASSWORD=dGhpcyBpcyBhaWRlcw==
       - MONGO_HOST=mongo:27017
     volumes:
       - D:\volumes\1aides\logs:/logs
@@ -23,8 +25,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=tongque
-      - MONGO_INITDB_ROOT_PASSWORD=Y2hlbjA0MTY=
+      - MONGO_INITDB_ROOT_USERNAME=aides
+      - MONGO_INITDB_ROOT_PASSWORD=dGhpcyBpcyBhaWRlcw==
     volumes:
       - D:\volumes\mongo:/data/db
     restart: always

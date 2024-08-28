@@ -1,6 +1,8 @@
 package zlog
 
 import (
+	"os"
+
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -12,27 +14,41 @@ var logger *zap.Logger
 func init() {
 	// 配置日志格式和级别
 	config := zap.NewProductionConfig()
-
-	// 设置时间戳字段名称为 "timestamp"
 	config.EncoderConfig.TimeKey = "timestamp"
-
-	// 使用ISO8601标准格式化时间戳
 	config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 
-	// 配置日志切割
+	// 文件日志配置
 	logFile := &lumberjack.Logger{
-		Filename:   "logs/app.log", // 日志文件路径
-		MaxSize:    100,            // 以MB为单位，日志文件达到该大小后切割
-		MaxBackups: 7,              // 保留的旧日志文件最大数量
-		MaxAge:     30,             // 日志文件最大保存天数
-		Compress:   true,           // 是否压缩旧日志文件
+		Filename:   "logs/app.log",
+		MaxSize:    100,
+		MaxBackups: 7,
+		MaxAge:     30,
+		Compress:   true,
 	}
 
-	// 创建日志核心（Core），指定日志级别、编码器和输出
-	core := zapcore.NewCore(
-		zapcore.NewJSONEncoder(config.EncoderConfig), // 使用JSON格式记录日志
-		zapcore.AddSync(logFile),                     // 日志写入到文件并支持切割
-		zapcore.InfoLevel,                            // 最低日志记录级别
+	// 文件日志的Core
+	fileCore := zapcore.NewCore(
+		zapcore.NewJSONEncoder(config.EncoderConfig), // JSON编码器
+		zapcore.AddSync(logFile),                     // 日志切割
+		zapcore.InfoLevel,                            // 文件日志级别
+	)
+
+	// 控制台输出配置
+	consoleEncoderConfig := zap.NewDevelopmentEncoderConfig()
+	consoleEncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	consoleEncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder // 控制台彩色输出
+
+	// 控制台日志的Core
+	consoleCore := zapcore.NewCore(
+		zapcore.NewConsoleEncoder(consoleEncoderConfig), // 控制台编码器
+		zapcore.AddSync(os.Stdout),                      // 标准输出
+		zapcore.DebugLevel,                              // 控制台日志级别
+	)
+
+	// 使用MultiCore组合多个日志Core
+	core := zapcore.NewTee(
+		fileCore,
+		consoleCore,
 	)
 
 	// 创建日志器并应用核心

@@ -1,5 +1,5 @@
 # 使用官方Go 1.23镜像作为构建环境
-FROM golang:1.23 as builder
+FROM golang:1.23 AS builder
 ENV GOPROXY="https://goproxy.cn|https://mirrors.tencentyun.com/go/|https://mirrors.aliyun.com/goproxy/|direct"
 # 设置工作目录
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 RUN cd cmd && CGO_ENABLED=0 GOOS=linux go build -o 1aides .
 
 # 获取CA证书（使用Alpine作为基础）
-FROM alpine:latest as certs
+FROM alpine:latest AS certs
 RUN apk --update add ca-certificates
 
 # 使用scratch作为最终基础镜像，创建一个更小的镜像
@@ -28,7 +28,8 @@ COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certifica
 
 # 从builder阶段复制可执行文件到根目录并重新命名为1aides
 COPY --from=builder /app/cmd/1aides /app/1aides
-
+# 确保路径正确，复制frontend目录
+COPY --from=builder /app/frontend/ /app/frontend/
 # 设置环境变量以确保应用使用正确的CA证书路径
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV SSL_CERT_DIR=/etc/ssl/certs

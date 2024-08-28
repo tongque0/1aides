@@ -34,8 +34,8 @@ var (
 func NewMongoDB() {
 	once.Do(func() {
 		// 从环境变量中获取MongoDB用户名、密码和地址
-		mongoUser := getEnv("MONGO_USER", "tongque")
-		mongoPassword := getEnv("MONGO_PASSWORD", "Y2hlbjA0MTY=")
+		mongoUser := getEnv("MONGO_USER", "aides")
+		mongoPassword := getEnv("MONGO_PASSWORD", "dGhpcyBpcyBhaWRlcw==")
 		mongoHost := getEnv("MONGO_HOST", "localhost:27017")
 
 		// 构建MongoDB连接URI
