@@ -3,9 +3,12 @@ package message
 import (
 	"1aides/internal/helper"
 	"1aides/pkg/components/auth"
+	"fmt"
 
 	"github.com/eatmoreapple/openwechat"
 )
+
+var globalQRCodeURL string
 
 func HandleMessage(msg *openwechat.Message) {
 
@@ -21,7 +24,11 @@ func HandleMessage(msg *openwechat.Message) {
 	}
 }
 
-func HandleUUID(uuid string) string {
-	qrcodeUrl := openwechat.GetQrcodeUrl(uuid)
-	return qrcodeUrl
+func HandleUUID(uuid string) {
+	globalQRCodeURL = openwechat.GetQrcodeUrl(uuid)
+}
+
+func GetQRCodeURL() string {
+	fmt.Println(globalQRCodeURL)
+	return globalQRCodeURL
 }

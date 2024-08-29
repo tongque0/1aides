@@ -8,9 +8,7 @@ import (
 func SetupRoutes(router *gin.Engine) {
 	// 首页
 	router.GET("/", HomeHandler)
-
-	// 健康检查接口
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "pong"})
-	})
+	// 登陆
+	router.GET("/login", LoginHandler)
+	
 }
