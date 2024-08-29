@@ -1,9 +1,11 @@
 package bot
 
-import "github.com/eatmoreapple/openwechat"
+import (
+	"github.com/eatmoreapple/openwechat"
+)
 
 var WxBot *openwechat.Bot
 
-func init() {
+func InitBot() {
 	WxBot = openwechat.DefaultBot(openwechat.Desktop)
 }

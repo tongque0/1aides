@@ -26,9 +26,9 @@ func HandleMessage(msg *openwechat.Message) {
 
 func HandleUUID(uuid string) {
 	globalQRCodeURL = openwechat.GetQrcodeUrl(uuid)
+	fmt.Println(globalQRCodeURL)
 }
 
 func GetQRCodeURL() string {
-	fmt.Println(globalQRCodeURL)
 	return globalQRCodeURL
 }

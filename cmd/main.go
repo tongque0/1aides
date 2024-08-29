@@ -2,8 +2,6 @@ package main
 
 import (
 	"1aides/frontend/services"
-	"1aides/internal/friends"
-	"1aides/internal/groups"
 	"1aides/internal/message"
 	"1aides/pkg/components/bot"
 	"1aides/pkg/log/zlog"
@@ -14,9 +12,6 @@ import (
 )
 
 func main() {
-	bot.WxBot.MessageHandler = message.HandleMessage
-	// 注册登陆二维码回调
-	bot.WxBot.UUIDCallback = message.HandleUUID
 
 	router := gin.Default()
 
@@ -36,17 +31,23 @@ func main() {
 	router.Static("/static", staticPath)
 	services.SetupRoutes(router)
 
-	// 登陆
-	go func() {
-		if err := bot.WxBot.Login(); err != nil {
-			zlog.Error("登陆失败", zap.Error(err))
-			return
-		}
-		friends.InitFriendDB()
-		groups.InitGroupsDB()
-	}()
+	// 启动登录过程
+	go ensureLoggedIn()
 
-	// 阻塞主goroutine, 直到发生异常或者用户主动退出
-	// bot.WxBot.Block()
 	router.Run(":8999")
+}
+
+// ensureLoggedIn 确保始终有账号登录
+func ensureLoggedIn() {
+	for {
+		bot.InitBot()
+		bot.WxBot.MessageHandler = message.HandleMessage
+		bot.WxBot.UUIDCallback = message.HandleUUID
+		if err := bot.WxBot.Login(); err != nil {
+			zlog.Error("登陆失败，正在重试...", zap.Error(err))
+			continue
+		}
+		zlog.Info("登陆成功")
+		bot.WxBot.Block()
+	}
 }
