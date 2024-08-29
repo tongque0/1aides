@@ -9,7 +9,7 @@ services:
     ports:
       - "8999:8999"
     environment:
-      - TEMPLATE_PATH=./templates
+      - TEMPLATE_PATH=./templates/*
       - STATIC_PATH=./static
       - MONGO_USER=aides
       - MONGO_PASSWORD=dGhpcyBpcyBhaWRlcw==

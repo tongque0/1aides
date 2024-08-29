@@ -1,7 +1,7 @@
 package main
 
 import (
-	"1aides/frontend/services/routes"
+	"1aides/frontend/services"
 	"1aides/internal/message"
 	"1aides/pkg/components/bot"
 	"os"
@@ -24,7 +24,11 @@ func main() {
 		staticPath = "../frontend/static" // 默认值，适用于开发环境
 	}
 
-	routes.SetupRoutes(router)
+	router.LoadHTMLGlob(templatePath)
+
+	// Serve static files
+	router.Static("/static", staticPath)
+	services.SetupRoutes(router)
 
 	bot.WxBot.MessageHandler = message.HandleMessage
 	// 注册登陆二维码回调
