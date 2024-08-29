@@ -2,6 +2,8 @@ package main
 
 import (
 	"1aides/frontend/services"
+	"1aides/internal/friends"
+	"1aides/internal/groups"
 	"1aides/internal/message"
 	"1aides/pkg/components/bot"
 	"1aides/pkg/log/zlog"
@@ -42,12 +44,12 @@ func ensureLoggedIn() {
 	for {
 		bot.InitBot()
 		bot.WxBot.MessageHandler = message.HandleMessage
-		bot.WxBot.UUIDCallback = message.HandleUUID
 		if err := bot.WxBot.Login(); err != nil {
 			zlog.Error("登陆失败，正在重试...", zap.Error(err))
 			continue
 		}
-		zlog.Info("登陆成功")
+		friends.InitFriendDB()
+		groups.InitGroupsDB()
 		bot.WxBot.Block()
 	}
 }

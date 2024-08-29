@@ -28,8 +28,9 @@ COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certifica
 
 # 从builder阶段复制可执行文件到根目录并重新命名为1aides
 COPY --from=builder /app/cmd/1aides /app/1aides
-# 确保路径正确，复制frontend目录
-COPY --from=builder /app/frontend/ /app/frontend/
+# 复制 frontend 目录中的 templates 和 static 目录
+COPY --from=builder /app/frontend/templates /app/frontend/templates
+COPY --from=builder /app/frontend/static /app/frontend/static
 # 设置环境变量以确保应用使用正确的CA证书路径
 ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ENV SSL_CERT_DIR=/etc/ssl/certs

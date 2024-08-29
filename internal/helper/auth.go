@@ -1,4 +1,4 @@
-package auth
+package helper
 
 import (
 	"1aides/internal/friends"

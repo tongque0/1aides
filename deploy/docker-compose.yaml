@@ -9,8 +9,8 @@ services:
     ports:
       - "8999:8999"
     environment:
-      - TEMPLATE_PATH=./templates/*
-      - STATIC_PATH=./static
+      - TEMPLATE_PATH=/app/frontend/templates/*
+      - STATIC_PATH=/app/frontend/static
       - MONGO_USER=aides
       - MONGO_PASSWORD=dGhpcyBpcyBhaWRlcw==
       - MONGO_HOST=mongo:27017

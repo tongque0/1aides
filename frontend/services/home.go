@@ -1,7 +1,7 @@
 package services
 
 import (
-	"1aides/internal/message"
+	"1aides/pkg/components/bot"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,5 +15,5 @@ func HomeHandler(c *gin.Context) {
 }
 
 func loginimg() string {
-	return message.GetQRCodeURL()
+	return bot.GetLoginURL()
 }

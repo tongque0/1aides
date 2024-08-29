@@ -4,8 +4,8 @@ services:
   1aides:
     image: serverless-100026543835-docker.pkg.coding.net/1aides/1aides/1aides:latest
     environment:
-      - TEMPLATE_PATH=./templates
-      - STATIC_PATH=./static
+      - TEMPLATE_PATH=/app/frontend/templates/*
+      - STATIC_PATH=/app/frontend/static
       - MONGO_USER=aides
       - MONGO_PASSWORD=dGhpcyBpcyBhaWRlcw==
       - MONGO_HOST=mongo:27017
