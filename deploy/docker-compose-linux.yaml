@@ -9,6 +9,8 @@ services:
       - MONGO_USER=aides
       - MONGO_PASSWORD=dGhpcyBpcyBhaWRlcw==
       - MONGO_HOST=mongo:27017
+    ports:
+      - "8999:8999"
     volumes:
       - /opt/volumes/1aides/logs:/logs
     depends_on:
