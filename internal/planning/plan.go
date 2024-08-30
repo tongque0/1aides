@@ -5,7 +5,6 @@ import (
 	"1aides/pkg/components/db"
 	"1aides/pkg/log/zlog"
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/eatmoreapple/openwechat"
@@ -25,7 +24,7 @@ func GoPlanning() {
 	c := cron.New(cron.WithSeconds())
 
 	// 添加一个每秒执行一次的定时任务
-	InitPlanFormDB(c)
+	initPlanFormDB(c)
 
 	// 启动定时任务
 	c.Start()
@@ -34,7 +33,7 @@ func GoPlanning() {
 	select {}
 }
 
-func InitPlanFormDB(c *cron.Cron) {
+func initPlanFormDB(c *cron.Cron) {
 	collection := db.GetMongoDB().Collection("plantask")
 	filter := bson.M{"deleted": false}
 	cursor, err := collection.Find(context.TODO(), filter)
@@ -54,7 +53,7 @@ func InitPlanFormDB(c *cron.Cron) {
 		var entryID cron.EntryID
 		entryID, err = c.AddFunc(task.TaskTime, func() {
 			task.EntryID = entryID
-			AddPlan(c, collection, task)
+			addPlan(c, collection, task)
 		})
 		if err != nil {
 			zlog.Error("添加定时任务失败", zap.Error(err))
@@ -64,13 +63,11 @@ func InitPlanFormDB(c *cron.Cron) {
 }
 
 // AddPlan 执行任务并根据任务类型标记为完成或更新状态
-func AddPlan(c *cron.Cron, collection *mongo.Collection, task PlanTask) {
+func addPlan(c *cron.Cron, collection *mongo.Collection, task PlanTask) {
 	// 处理发送消息逻辑
 	if task.Recipients != nil {
-		for _, recipient := range task.Recipients {
-			sendMessage(recipient)
-		}
-	} 
+		sendMessage(task.Recipients, task.Content)
+	}
 
 	// 根据任务类型更新任务状态
 	if task.TaskType == SingleTask {
@@ -81,21 +78,34 @@ func AddPlan(c *cron.Cron, collection *mongo.Collection, task PlanTask) {
 }
 
 // sendMessage 发送消息的逻辑
-func sendMessage(recipient Object) {
+func sendMessage(recipient []Object, content Content) {
 	// 发送消息逻辑
 	self, err := bot.WxBot.GetCurrentUser()
 	if err != nil {
-		zlog.Error("获取当前用户失败", zap.Error(err))
+		zlog.Error("定时任务获取机器人失败", zap.Error(err))
 		return
 	}
 	friends, err := self.Friends()
 	if err != nil {
-		zlog.Error("获取好友列表失败", zap.Error(err))
+		zlog.Error("定时任务获取好友列表失败", zap.Error(err))
 		return
 	}
-	sult := friends.Search(1, func(friend *openwechat.Friend) bool { return friend.ID() == recipient.ID })
-	fmt.Println(sult)
-	fmt.Printf("发送消息给: %s，类型: %s\n", recipient.ID, recipient.Type)
+	groups, err := self.Groups()
+	if err != nil {
+		zlog.Error("定时任务群组列表失败", zap.Error(err))
+		return
+	}
+	for _, r := range recipient {
+		if r.Type == User {
+			friend := friends.Search(1, func(friend *openwechat.Friend) bool { return friend.ID() == r.ID })[0]
+			friend.SendText(content.Detail)
+		} else if r.Type == Group {
+			group := groups.Search(1, func(group *openwechat.Group) bool { return group.ID() == r.ID })[0]
+			group.SendText(content.Detail)
+		} else if r.Type == FileHelper {
+			self.FileHelper().SendText(content.Detail)
+		}
+	}
 }
 
 // markTaskAsCompleted 更新任务为已完成并移除定时任务
