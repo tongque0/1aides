@@ -35,8 +35,7 @@ func main() {
 	services.SetupRoutes(router)
 
 	// 启动微信机器人
-	// go botService()
-	go planning.GoPlanning()
+	go botService()
 	router.Run(":8999")
 }
 
@@ -51,6 +50,7 @@ func botService() {
 		}
 		friends.InitFriendDB()
 		groups.InitGroupsDB()
+		go planning.GoPlanning()
 		bot.WxBot.Block()
 	}
 }
