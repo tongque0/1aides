@@ -8,7 +8,7 @@ import (
 
 // HomeHandler 处理主页请求
 func HomeHandler(c *gin.Context) {
-	c.HTML(200, "index.tmpl", gin.H{
+	c.HTML(200, "home.tmpl", gin.H{
 		"title":    "首页",
 		"loginimg": loginimg(),
 	})

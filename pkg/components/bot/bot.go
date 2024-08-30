@@ -8,6 +8,7 @@ var WxBot *openwechat.Bot
 var globalQRCodeURL string
 
 func InitBot() {
+	WxBot = nil
 	WxBot = openwechat.DefaultBot(openwechat.Desktop)
 	WxBot.UUIDCallback = handleUUID
 }

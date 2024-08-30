@@ -46,6 +46,7 @@ func botService() {
 		bot.WxBot.MessageHandler = message.HandleMessage
 		if err := bot.WxBot.Login(); err != nil {
 			zlog.Error("登陆失败，正在重试...", zap.Error(err))
+			bot.WxBot.Exit()
 			continue
 		}
 		friends.InitFriendDB()
