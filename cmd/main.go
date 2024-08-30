@@ -5,6 +5,7 @@ import (
 	"1aides/internal/friends"
 	"1aides/internal/groups"
 	"1aides/internal/message"
+	"1aides/internal/planning"
 	"1aides/pkg/components/bot"
 	"1aides/pkg/log/zlog"
 	"os"
@@ -33,14 +34,14 @@ func main() {
 	router.Static("/static", staticPath)
 	services.SetupRoutes(router)
 
-	// 启动登录过程
-	go ensureLoggedIn()
-
+	// 启动微信机器人
+	// go botService()
+	go planning.GoPlanning()
 	router.Run(":8999")
 }
 
-// ensureLoggedIn 确保始终有账号登录
-func ensureLoggedIn() {
+// 确保始终有账号登录
+func botService() {
 	for {
 		bot.InitBot()
 		bot.WxBot.MessageHandler = message.HandleMessage

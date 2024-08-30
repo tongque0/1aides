@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -62,7 +63,8 @@ func NewMongoDB() {
 		MongoDB = client.Database("aides")
 
 		// 检查并初始化数据表和数据
-		ensureData(MongoDB)
+		ensureModelsData(MongoDB)
+		ensurePlanData(MongoDB)
 	})
 }
 
@@ -83,7 +85,7 @@ func getEnv(key, defaultValue string) string {
 }
 
 // ensureData 检查并初始化数据表和数据
-func ensureData(db *mongo.Database) {
+func ensureModelsData(db *mongo.Database) {
 	collectionName := "models"
 	collection := db.Collection(collectionName)
 
@@ -95,16 +97,52 @@ func ensureData(db *mongo.Database) {
 
 	// 如果集合为空，初始化数据
 	if count < 1 {
-		initialData := GPTData{
-			Type: "GPT",
-			Config: Config{
-				Model:   "gpt-4o-mini",
-				ApiKey:  "sk-29sMaKDD5aBgDtyx02014694972846Cc8c8b9fEb18192532",
-				BaseURL: "https://prime.zetatechs.com/v1",
-				Prompt:  "你的身份是一位微信消息机器人，你的开发者是同阙。你可以回复任何你想回复的内容，但是要有逻辑。",
+		initialData := bson.M{
+			"Type": "GPT",
+			"Config": bson.M{
+				"Model":   "gpt-4o-mini",
+				"ApiKey":  "sk-29sMaKDD5aBgDtyx02014694972846Cc8c8b9fEb18192532",
+				"BaseURL": "https://prime.zetatechs.com/v1",
+				"Prompt":  "你的身份是一位微信消息机器人，你的开发者是同阙。你可以回复任何你想回复的内容，但是要有逻辑。",
 			},
 		}
+
 		_, err := collection.InsertOne(context.TODO(), initialData)
+		if err != nil {
+			zlog.Fatal("无法初始化数据", zap.Error(err))
+		}
+		zlog.Info("数据表已初始化", zap.String("collection", collectionName))
+	}
+}
+
+func ensurePlanData(db *mongo.Database) {
+	collectionName := "plantask"
+	collection := db.Collection(collectionName)
+
+	// 检查集合中的文档数量
+	count, err := collection.CountDocuments(context.TODO(), bson.D{})
+	if err != nil {
+		zlog.Fatal("无法获取数据表信息", zap.Error(err))
+	}
+
+	// 如果集合为空，初始化数据
+	if count < 1 {
+		// 示例任务数据
+		initialTask := bson.M{
+			"TaskType": "single",      // 任务类型为循环任务
+			"TaskTime": "* * * * * *", // 每秒执行的 Cron 表达式
+			"Content":  "这是一个每天执行的任务",
+			"Recipients": []bson.M{
+				{
+					"Type": "filehelper", // 文件传输助手
+					"ID":   "filehelper", // 文件传输助手的ID
+				},
+			},
+			"LastExecuted": time.Time{}, // 初始化为零值
+			"Deleted":      false,       // 初始状态为未删除
+		}
+
+		_, err := collection.InsertOne(context.TODO(), initialTask)
 		if err != nil {
 			zlog.Fatal("无法初始化数据", zap.Error(err))
 		}

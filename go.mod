@@ -8,6 +8,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/hashicorp/consul/api v1.29.2
 	github.com/natefinch/lumberjack v2.0.0+incompatible
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/sashabaranov/go-openai v1.28.2
 	go.mongodb.org/mongo-driver v1.16.1
 	go.uber.org/zap v1.27.0
