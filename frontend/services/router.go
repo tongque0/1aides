@@ -10,5 +10,5 @@ func SetupRoutes(router *gin.Engine) {
 	router.GET("/", HomeHandler)
 	// 登陆
 	router.GET("/login", LoginHandler)
-	
+
 }

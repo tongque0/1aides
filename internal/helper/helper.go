@@ -42,7 +42,7 @@ func IsHelp(msg *openwechat.Message) bool {
 }
 
 func GroupRule(msg *openwechat.Message) bool {
-	
+
 	return false
 }
 

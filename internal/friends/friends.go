@@ -22,7 +22,6 @@ type Friend struct {
 	MsgList       []map[string]string `bson:"msglist"`
 }
 
-
 // InitFriendDB 初始化好友数据库
 func InitFriendDB() {
 	// 获取所有的好友

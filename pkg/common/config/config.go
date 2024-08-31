@@ -4,7 +4,6 @@ package config
 // 	mongo *Mongo `yaml:"Mongo"`
 // }
 
-
 // type Mongo struct {
 // 	Username string `yaml:"Username"`
 // 	Password string `yaml:"Password"`
