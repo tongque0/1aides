@@ -6,5 +6,7 @@ import (
 
 // LoginHandler 处理登陆请求
 func LoginHandler(c *gin.Context) {
-	c.HTML(200, "index.html", gin.H{"title": "首页"})
+	c.HTML(200, "groups.tmpl", gin.H{
+		"ActivePage": "login", // 设置活动页面
+	})
 }

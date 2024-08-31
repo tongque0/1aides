@@ -1,0 +1,38 @@
+{{ template "header" . }}
+
+<div class="container">
+    <h1 class="my-4">好友列表</h1>
+
+    <!-- 好友列表表格 -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>昵称</th>
+                <th>备注</th>
+                <th>权限</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .Friends }}
+            <tr>
+                <td>{{ .NickName }}</td>
+                <td>{{ .RemarkName }}</td>
+                <td>
+                    {{ if .HasPermission }}
+                    <span class="badge bg-success">有权限</span>
+                    {{ else }}
+                    <span class="badge bg-danger">无权限</span>
+                    {{ end }}
+                </td>
+                <td>
+                    <!-- 这里可以添加一些操作按钮，比如编辑权限、删除好友等 -->
+                    <a href="/friends/edit/{{ .ID }}" class="btn btn-primary btn-sm">编辑权限</a>
+                </td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+</div>
+
+{{ template "footer" . }}

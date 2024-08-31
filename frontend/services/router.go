@@ -10,5 +10,10 @@ func SetupRoutes(router *gin.Engine) {
 	router.GET("/", HomeHandler)
 	// 登陆
 	router.GET("/login", LoginHandler)
-
+	// 登陆
+	router.GET("/plan", PlanHandler)
+	// 好友
+	router.GET("/friends", FriendsHandler)
+	// 群组
+	router.GET("/groups", GroupsHandler)
 }

@@ -1,13 +1,60 @@
 {{ template "header" . }}
-<div class="container">
-<div class="row">
-  <div class="col-md-6">
-      <div>
-        <img src="{{ .loginimg }}" alt="Login QR Code">
+<div class="container-fluid py-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="row">
+            <!-- 左侧内容区域 -->
+            <div class="col-md-7">
+                <h1>Quickly Add Your</h1>
+                <h1>Aides</h1>
+                <p class="mt-4">Scan the code to log in to your robot WeChat, and you can quickly set up your aides.</p>
+                <p class="mt-2"><strong>Note:</strong> There is a risk of banning!</p>
+            </div>
+
+            <!-- 右侧扫码区域 -->
+            <div class="col-md-5">
+                <div class="d-flex flex-column align-items-end">
+                    <div class="text-center">
+                        <h5>Scan Login</h5>
+                        <img src="{{ .loginimg }}" alt="Login QR Code" class="img-fluid" style="max-width: 150px; height: auto;">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="col-md-6">右侧内容</div>
 </div>
 
+<!-- 新增区域: 卡片展示 -->
+<div class="container py-5">
+
 </div>
-{{template "footer" .}}
+
+{{ template "footer" . }}
+
+
+ <script>
+        // 定义一个函数来更新扫码状态
+        function updateScanStatus() {
+            axios.get('/api/scan-status')
+                .then(response => {
+                    const data = response.data;
+                    const statusElement = document.querySelector('#scan-status');
+
+                    if (data.scanStatus === 'waiting') {
+                        statusElement.innerHTML = `
+                            <img src="${data.loginImg}" alt="Login QR Code" class="img-fluid" style="max-width: 150px; height: auto;">
+                            <p>Please scan the QR code to log in.</p>
+                        `;
+                    } else if (data.scanStatus === 'success') {
+                        statusElement.innerHTML = '<p>Login successful!</p>';
+                    } else if (data.scanStatus === 'failed') {
+                        statusElement.innerHTML = '<p class="text-danger">Login failed. Please try again.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching scan status:', error);
+                });
+        }
+
+        // 每5秒检查一次状态
+        setInterval(updateScanStatus, 500);
+ </script>
