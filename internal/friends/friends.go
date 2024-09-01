@@ -83,3 +83,27 @@ func CheckPermission(friendID string) (bool, error) {
 
 	return friend.HasPermission, nil
 }
+
+// getFriends 获取好友
+func GetFriends() []Friend {
+	collection := db.GetMongoDB().Collection("friends")
+	cursor, err := collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		zlog.Error("查询好友列表失败", zap.Error(err))
+		return nil
+	}
+	defer cursor.Close(context.Background())
+
+	var friends []Friend
+	for cursor.Next(context.Background()) {
+		var friend Friend
+		err := cursor.Decode(&friend)
+		if err != nil {
+			zlog.Error("解码好友信息失败", zap.Error(err))
+			return nil
+		}
+		friends = append(friends, friend)
+	}
+
+	return friends
+}

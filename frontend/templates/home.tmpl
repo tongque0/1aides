@@ -32,29 +32,5 @@
 
 
  <script>
-        // 定义一个函数来更新扫码状态
-        function updateScanStatus() {
-            axios.get('/api/scan-status')
-                .then(response => {
-                    const data = response.data;
-                    const statusElement = document.querySelector('#scan-status');
 
-                    if (data.scanStatus === 'waiting') {
-                        statusElement.innerHTML = `
-                            <img src="${data.loginImg}" alt="Login QR Code" class="img-fluid" style="max-width: 150px; height: auto;">
-                            <p>Please scan the QR code to log in.</p>
-                        `;
-                    } else if (data.scanStatus === 'success') {
-                        statusElement.innerHTML = '<p>Login successful!</p>';
-                    } else if (data.scanStatus === 'failed') {
-                        statusElement.innerHTML = '<p class="text-danger">Login failed. Please try again.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching scan status:', error);
-                });
-        }
-
-        // 每5秒检查一次状态
-        setInterval(updateScanStatus, 500);
  </script>

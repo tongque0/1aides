@@ -78,3 +78,26 @@ func CheckPermission(groupsID string) (bool, error) {
 
 	return group.HasPermission, nil
 }
+
+// GetGroups 获取所有群组
+func GetGroups() []Group {
+	collection := db.GetMongoDB().Collection("groups")
+	cursor, err := collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		zlog.Error("查询群组失败", zap.Error(err))
+		return nil
+	}
+	defer cursor.Close(context.Background())
+
+	var groups []Group
+	for cursor.Next(context.Background()) {
+		var group Group
+		err := cursor.Decode(&group)
+		if err != nil {
+			zlog.Error("解码群组失败", zap.Error(err))
+			continue
+		}
+		groups = append(groups, group)
+	}
+	return groups
+}
