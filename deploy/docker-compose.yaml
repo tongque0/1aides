@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   1aides:
+    container_name: 1aides
     build:
       context: ..
       dockerfile: Dockerfile
@@ -15,12 +16,13 @@ services:
       - MONGO_PASSWORD=dGhpcyBpcyBhaWRlcw==
       - MONGO_HOST=mongo:27017
     volumes:
-      - D:\volumes\1aides\logs:/logs
+      - 1aides_logs:/logs
     depends_on:
       - mongo
     restart: always
 
   mongo:
+    container_name: mongo
     image: hub.atomgit.com/amd64/mongo:latest
     ports:
       - "27017:27017"
@@ -28,5 +30,9 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=aides
       - MONGO_INITDB_ROOT_PASSWORD=dGhpcyBpcyBhaWRlcw==
     volumes:
-      - D:\volumes\mongo:/data/db
+      - 1aides_mongo:/data/db
     restart: always
+
+volumes:
+  1aides_logs:
+  1aides_mongo:
