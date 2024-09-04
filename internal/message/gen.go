@@ -24,7 +24,7 @@ func gen(msg *openwechat.Message) {
 	// 从配置中心加载模型配置
 	var model modhub.Model
 	modelctl := db.GetMongoDB().Collection("models")
-	filter := bson.M{"type": "GPT"}
+	filter := bson.M{"type": "gpt"}
 	err = modelctl.FindOne(context.TODO(), filter).Decode(&model)
 	if err != nil {
 		zlog.Error("加载配置失败", zap.Error(err))
