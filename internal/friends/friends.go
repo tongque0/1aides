@@ -16,6 +16,7 @@ import (
 type Friend struct {
 	ID            string              `bson:"id"`
 	HasPermission bool                `bson:"has_permission"`
+	IsAdmin       bool                `bson:"is_admin"`
 	NickName      string              `bson:"nick_name"`
 	RemarkName    string              `bson:"remark_name"`
 	Memory        string              `bson:"memory"`
