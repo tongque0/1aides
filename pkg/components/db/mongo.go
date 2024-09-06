@@ -65,6 +65,7 @@ func NewMongoDB() {
 		// 检查并初始化数据表和数据
 		ensureModelsData(MongoDB)
 		ensurePlanData(MongoDB)
+		ensureWebAdmin(MongoDB)
 	})
 }
 
@@ -140,6 +141,32 @@ func ensurePlanData(db *mongo.Database) {
 			"deleted":      false,                                                // 初始状态为未删除
 		}
 		_, err := collection.InsertOne(context.TODO(), initialTask)
+		if err != nil {
+			zlog.Fatal("无法初始化数据", zap.Error(err))
+		}
+		zlog.Info("数据表已初始化", zap.String("collection", collectionName))
+	}
+}
+
+// ensureWebAdmin 检查并初始化数据表和数据
+func ensureWebAdmin(db *mongo.Database) {
+	collectionName := "webadmin"
+	collection := db.Collection(collectionName)
+
+	// 检查集合中的文档数量
+	count, err := collection.CountDocuments(context.TODO(), bson.D{})
+	if err != nil {
+		zlog.Fatal("无法获取数据表信息", zap.Error(err))
+	}
+
+	// 如果集合为空，初始化数据
+	if count < 1 {
+		// 示例任务数据
+		initAdmin := bson.M{
+			"username": "admin",
+			"password": "Aides123.",
+		}
+		_, err := collection.InsertOne(context.TODO(), initAdmin)
 		if err != nil {
 			zlog.Fatal("无法初始化数据", zap.Error(err))
 		}

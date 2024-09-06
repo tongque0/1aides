@@ -10,6 +10,8 @@ import (
 	"1aides/pkg/log/zlog"
 	"os"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -32,6 +34,8 @@ func main() {
 
 	// Serve static files
 	router.Static("/static", staticPath)
+	store := cookie.NewStore([]byte("1aides"))
+	router.Use(sessions.Sessions("mysession", store))
 	services.SetupRoutes(router)
 
 	// 启动微信机器人

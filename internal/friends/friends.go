@@ -55,6 +55,7 @@ func InitFriendDB() {
 			},
 			"$setOnInsert": bson.M{
 				"has_permission": false, // 新用户时初始化权限为false
+				"is_admin":       false, // 新用户时初始化为好友
 			},
 		}
 
@@ -106,4 +107,17 @@ func GetFriends() []Friend {
 	}
 
 	return friends
+}
+
+// SetPermission 设置好友权限
+func SetPermission(friendID string, permission bool, is_admin bool) error {
+	collection := db.GetMongoDB().Collection("friends")
+	filter := bson.M{"id": friendID}
+	update := bson.M{"$set": bson.M{"has_permission": permission, "is_admin": is_admin}}
+	_, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		zlog.Error("设置好友权限失败", zap.Error(err))
+		return err
+	}
+	return nil
 }

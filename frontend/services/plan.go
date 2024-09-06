@@ -6,6 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func RegisterPlanRoutes(router *gin.RouterGroup) {
+	// 计划页面
+	router.GET("/plan", PlanHandler)
+}
+
 // HomeHandler 处理主页请求
 func PlanHandler(c *gin.Context) {
 	c.HTML(200, "plan.tmpl", gin.H{

@@ -6,6 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func RegisterGroupsRoutes(router *gin.RouterGroup) {
+	// 好友管理页面
+	router.GET("/groups", GroupsHandler)
+}
+
 // HomeHandler 处理主页请求
 func GroupsHandler(c *gin.Context) {
 	c.HTML(200, "groups.tmpl", gin.H{

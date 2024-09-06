@@ -1,0 +1,66 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        1aides
+    </title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card p-4 shadow" style="width: 350px;">
+        <h4 class="text-center mb-4">Login</h4>
+        <div id="message" class="alert d-none"></div> <!-- 提示消息区域 -->
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">Remember Me</label>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 监听表单提交事件
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // 阻止表单默认提交行为
+
+        // 获取表单数据
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // 发送POST请求到服务器
+        axios.post('/login/login', {
+            username: username,
+            password: password,
+        })
+        .then(function (response) {
+            // 登录成功，处理成功逻辑
+            document.getElementById('message').className = 'alert alert-success';
+            document.getElementById('message').textContent = 'Login successful!';
+            document.getElementById('message').classList.remove('d-none');
+
+            // 你可以在这里重定向到主页或其他页面
+            window.location.href = '/';
+        })
+        .catch(function (error) {
+            // 登录失败，显示错误信息
+            document.getElementById('message').className = 'alert alert-danger';
+            document.getElementById('message').textContent = 'Login failed: ' + error.response.data.error;
+            document.getElementById('message').classList.remove('d-none');
+        });
+    });
+</script>
