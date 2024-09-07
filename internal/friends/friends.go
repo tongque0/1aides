@@ -86,6 +86,21 @@ func CheckPermission(friendID string) (bool, error) {
 	return friend.HasPermission, nil
 }
 
+// CheckPermission 检查指定好友是否具有权限
+func CheckAdmin(friendID string) (bool, error) {
+	collection := db.GetMongoDB().Collection("friends")
+	filter := bson.M{"id": friendID}
+
+	var friend Friend
+	err := collection.FindOne(context.Background(), filter).Decode(&friend)
+	if err != nil {
+		zlog.Error("查询好友权限失败", zap.Error(err))
+		return false, err
+	}
+
+	return friend.IsAdmin, nil
+}
+
 // getFriends 获取好友
 func GetFriends() []Friend {
 	collection := db.GetMongoDB().Collection("friends")

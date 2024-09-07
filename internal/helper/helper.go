@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"1aides/internal/friends"
 	"regexp"
 	"strings"
 
@@ -67,6 +68,19 @@ func Helper(msg *openwechat.Message) {
 }
 
 func adminCmd(command string, msg *openwechat.Message) {
+	sender, err := msg.Sender()
+	if err != nil {
+		return
+	}
+	isAdmin, err := friends.CheckAdmin(sender.ID())
+	if err != nil {
+		msg.ReplyText("您没有权限使用此功能")
+		return
+	}
+	if !isAdmin {
+		msg.ReplyText("您没有权限使用此功能")
+		return
+	}
 	switch {
 	case strings.HasPrefix(command, "aides admin help"):
 		msg.ReplyText(adminlist)

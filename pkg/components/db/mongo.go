@@ -100,7 +100,7 @@ func ensureModelsData(db *mongo.Database) {
 	// 如果集合为空，初始化数据
 	if count < 1 {
 		initialData := bson.M{
-			"type": "gpt",
+			"type": "GPT",
 			"config": bson.M{
 				"model":   "gpt-4o-mini",
 				"apikey":  "sk-29sMaKDD5aBgDtyx02014694972846Cc8c8b9fEb18192532",
