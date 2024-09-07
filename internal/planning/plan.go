@@ -18,16 +18,17 @@ import (
 // 需要有 类型，时间，内容，发送对象，是否完成，是否删除
 // 能够添加定时任务
 // 能够删除定时任务
+var C *cron.Cron
 
 func GoPlanning() {
 	// 启用包含秒的cron调度器
-	c := cron.New(cron.WithSeconds())
+	C = cron.New(cron.WithSeconds())
 
 	// 添加一个每秒执行一次的定时任务
-	initPlanFormDB(c)
+	initPlanFormDB(C)
 
 	// 启动定时任务
-	c.Start()
+	C.Start()
 
 	// 阻塞主线程，直到接收到退出信号
 	select {}
