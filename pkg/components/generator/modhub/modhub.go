@@ -57,6 +57,8 @@ func (m *Model) Gen(msgchan *msgchan.MsgChan, mermory *memory.Memory) {
 		// do something
 	case T5:
 		// do something
+	default:
+		m.genGPT(msgchan, mermory)
 	}
 }
 

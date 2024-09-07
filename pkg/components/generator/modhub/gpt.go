@@ -56,6 +56,7 @@ func (m *Model) genGPT(msgchan *msgchan.MsgChan, memory *memory.Memory) {
 
 	stream, err := c.CreateChatCompletionStream(ctx, req)
 	if err != nil {
+		msgchan.AddMessage("回复发生未知错误")
 		zlog.Warn("流式回复出错", zap.Error(err))
 	}
 	defer stream.Close()
