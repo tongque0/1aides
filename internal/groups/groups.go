@@ -13,10 +13,12 @@ import (
 )
 
 type Group struct {
-	ID            string `bson:"id"`
-	NickName      string `bson:"nick_name"`
-	RemarkName    string `bson:"remark_name"`
-	HasPermission bool   `bson:"has_permission"` // 权限字段
+	ID            string              `bson:"id"`
+	NickName      string              `bson:"nick_name"`
+	RemarkName    string              `bson:"remark_name"`
+	HasPermission bool                `bson:"has_permission"` // 权限字段
+	Memory        string              `bson:"memory"`
+	MsgList       []map[string]string `bson:"msglist"`
 }
 
 func InitGroupsDB() {
@@ -132,4 +134,17 @@ func SetPermission(friendID string, permission bool) error {
 		return err
 	}
 	return nil
+}
+
+func GetGroupDetail(groupID string) (Group, error) {
+	collection := db.GetMongoDB().Collection("groups")
+	filter := bson.M{"id": groupID}
+
+	var group Group
+	err := collection.FindOne(context.Background(), filter).Decode(&group)
+	if err != nil {
+		zlog.Error("查询群组失败", zap.Error(err))
+		return Group{}, err
+	}
+	return group, nil
 }

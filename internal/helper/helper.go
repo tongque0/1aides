@@ -25,6 +25,12 @@ COMMANDS:
 
    set		   设置服务
 
+		Example: aides set memory [记忆内容]
+
+   get		   获取服务信息
+
+		Example: aides get memory
+				 aides get memory
 
 GLOBAL OPTIONS:
    --help, -h  Show help
@@ -32,6 +38,8 @@ GLOBAL OPTIONS:
 
 const adminlist = `
 COMMANDS:
+    help        帮助手册
+
 	gencode    生成激活码
 
 `
@@ -60,6 +68,8 @@ func Helper(msg *openwechat.Message) {
 		msg.ReplyText("成功关闭服务")
 	case strings.HasPrefix(command, "aides set"):
 		setCmd(command, msg)
+	case strings.HasPrefix(command, "aides get"):
+		getCmd(command, msg)
 	case strings.HasPrefix(command, "aides admin"):
 		adminCmd(command, msg)
 	default:
@@ -93,8 +103,19 @@ func adminCmd(command string, msg *openwechat.Message) {
 
 func setCmd(command string, msg *openwechat.Message) {
 	switch {
-	case strings.HasPrefix(command, "aides set prompt"):
+	case strings.HasPrefix(command, "aides set memory"):
+		setFriendMemory(command, msg)
+	default:
 		msg.ReplyText("服务当前状态：运行中")
+	}
+}
+
+func getCmd(command string, msg *openwechat.Message) {
+	switch {
+	case strings.HasPrefix(command, "aides get memory"):
+		getMemory(msg)
+	case strings.HasPrefix(command, "aides get history"):
+		getHistory(msg)
 	default:
 		msg.ReplyText("服务当前状态：运行中")
 	}

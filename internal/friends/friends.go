@@ -153,3 +153,30 @@ func SetPermission(friendID string, permission bool, is_admin bool) error {
 	}
 	return nil
 }
+
+// GetFriendDetail 获取好友详细信息, 包括消息列表，备注等
+func GetFriendDetail(friendID string) (Friend, error) {
+	collection := db.GetMongoDB().Collection("friends")
+	filter := bson.M{"id": friendID}
+
+	var friend Friend
+	err := collection.FindOne(context.Background(), filter).Decode(&friend)
+	if err != nil {
+		zlog.Error("查询好友信息失败", zap.Error(err))
+		return Friend{}, err
+	}
+
+	return friend, nil
+}
+
+func SetFriendMemory(friendID string, memory string) error {
+	collection := db.GetMongoDB().Collection("friends")
+	filter := bson.M{"id": friendID}
+	update := bson.M{"$set": bson.M{"memory": memory}}
+	_, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		zlog.Error("设置好友备注失败", zap.Error(err))
+		return err
+	}
+	return nil
+}
