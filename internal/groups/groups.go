@@ -101,3 +101,16 @@ func GetGroups() []Group {
 	}
 	return groups
 }
+
+// SetPermission 设置好友权限
+func SetPermission(friendID string, permission bool) error {
+	collection := db.GetMongoDB().Collection("groups")
+	filter := bson.M{"id": friendID}
+	update := bson.M{"$set": bson.M{"has_permission": permission}}
+	_, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		zlog.Error("设置群组权限失败", zap.Error(err))
+		return err
+	}
+	return nil
+}

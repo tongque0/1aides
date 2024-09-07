@@ -2,4 +2,5 @@
 .vscode
 .dev
 cmd/logs/*
+cmd/tmp/*
 coverage.out

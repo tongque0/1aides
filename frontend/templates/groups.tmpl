@@ -1,7 +1,7 @@
 {{ template "header" . }}
 
 <div class="container">
-    <h1 class="my-4">群组列表</h1>
+    <h1 class="my-4">好友列表</h1>
 
     <!-- 好友列表表格 -->
     <table class="table table-striped">
@@ -10,25 +10,30 @@
                 <th>昵称</th>
                 <th>备注</th>
                 <th>权限</th>
-                <th>操作</th>
+                <th style="width: 330px;">操作</th>
             </tr>
         </thead>
         <tbody>
             {{ range .Groups}}
-            <tr>
+            <tr id="friend-{{ .ID }}">
                 <td>{{ .NickName }}</td>
                 <td>{{ .RemarkName }}</td>
-                <td>
-                    {{ if .HasPermission }}
+                <td id="permission-status-{{ .ID }}">
+                    {{if .HasPermission }}
                     <span class="badge bg-success">有权限</span>
                     {{ else }}
-                    <span class="badge bg-danger">无权限</span>
+                    <span class="badge bg-secondary">无权限</span>
                     {{ end }}
                 </td>
                 <td>
-                    <!-- 这里可以添加一些操作按钮，比如编辑权限、删除好友等 -->
-                    <a href="/friends/edit/{{ .ID }}" class="btn btn-primary btn-sm">编辑权限</a>
+                    <!-- 编辑权限按钮 -->
+                    <button class="btn btn-primary btn-sm" onclick="setPermission('{{ .ID }}', 'null')">拒绝</button>
+                    <button class="btn btn-primary btn-sm" onclick="setPermission('{{ .ID }}', 'normal')">允许</button>
                 </td>
+            </tr>
+            {{ else }}
+            <tr>
+                <td colspan="4" class="text-center">暂无好友数据</td>
             </tr>
             {{ end }}
         </tbody>
@@ -36,3 +41,28 @@
 </div>
 
 {{ template "footer" . }}
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    function setPermission(id, permission) {
+        axios.post('/groups/setpermission', {
+            id: id,
+            permission: permission
+        })
+        .then(function (response) {
+            // 根据响应，更新页面中的权限状态
+            const statusElement = document.getElementById(`permission-status-${id}`);
+            if (permission === 'admin') {
+                statusElement.innerHTML = '<span class="badge bg-danger">管理员</span>';
+            } else if (permission === 'normal') {
+                statusElement.innerHTML = '<span class="badge bg-success">有权限</span>';
+            } else if (permission === 'null') {
+                statusElement.innerHTML = '<span class="badge bg-secondary">无权限</span>';
+            }
+        })
+        .catch(function (error) {
+            console.error("权限更新失败", error);
+            alert("更新权限失败，请稍后再试。");
+        });
+    }
+</script>
