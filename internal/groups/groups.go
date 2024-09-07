@@ -20,26 +20,34 @@ type Group struct {
 }
 
 func InitGroupsDB() {
-	// 获取所有群组
+	// 获取当前用户
 	self, err := bot.WxBot.GetCurrentUser()
 	if err != nil {
 		zlog.Error("获取当前用户失败", zap.Error(err))
 		return
 	}
+
+	// 获取用户的所有群组
 	groups, err := self.Groups()
 	if err != nil {
 		zlog.Error("获取群组列表失败", zap.Error(err))
 		return
 	}
-	// // 获取MongoDB集合
+
+	// 获取MongoDB集合
 	collection := db.GetMongoDB().Collection("groups")
 
-	// // 插入群组信息到数据库
+	// 用于存储当前所有群组的ID
+	currentGroupIDs := make([]interface{}, 0, len(groups))
+
+	// 插入或更新群组信息到数据库
 	for _, group := range groups {
+		currentGroupIDs = append(currentGroupIDs, group.ID()) // 添加当前群组ID到列表
+
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		// MongoDB中使用filter来查找用户ID是否存在
+		// MongoDB中使用filter来查找群组ID是否存在
 		filter := bson.M{"id": group.ID()}
 
 		// 使用$set和$setOnInsert
@@ -49,18 +57,29 @@ func InitGroupsDB() {
 				"remark_name": group.RemarkName,
 			},
 			"$setOnInsert": bson.M{
-				"has_permission": false, // 新用户时初始化权限为false
+				"has_permission": false, // 新群组时初始化权限为false
 			},
 		}
 
-		// 更新或者插入用户，如果用户存在则更新，不存在则插入
+		// 更新或者插入群组，如果群组存在则更新，不存在则插入
 		opts := options.Update().SetUpsert(true)
 		_, err := collection.UpdateOne(ctx, filter, update, opts)
 		if err != nil {
-			zlog.Error("插入群组信息失败", zap.Error(err))
+			zlog.Error("插入或更新群组信息失败", zap.Error(err))
 		} else {
 			zlog.Info("成功插入或更新群组信息", zap.String("ID", group.ID()))
 		}
+	}
+
+	// 删除数据库中不在当前群组列表中的记录
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	deletionFilter := bson.M{"id": bson.M{"$nin": currentGroupIDs}}
+	deleteResult, err := collection.DeleteMany(ctx, deletionFilter)
+	if err != nil {
+		zlog.Error("删除非群组记录失败", zap.Error(err))
+	} else {
+		zlog.Info("已删除非群组记录", zap.Int64("count", deleteResult.DeletedCount))
 	}
 }
 

@@ -40,8 +40,13 @@ func InitFriendDB() {
 	// 获取MongoDB集合
 	collection := db.GetMongoDB().Collection("friends")
 
-	// 插入好友信息到数据库
+	// 用于存储当前所有好友的ID
+	currentFriendIDs := make([]interface{}, 0, len(friends))
+
+	// 插入或更新好友信息到数据库
 	for _, friend := range friends {
+		currentFriendIDs = append(currentFriendIDs, friend.ID()) // 添加当前好友ID到列表
+
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
@@ -68,6 +73,17 @@ func InitFriendDB() {
 		} else {
 			zlog.Info("成功插入或更新好友信息", zap.String("ID", friend.ID()))
 		}
+	}
+
+	// 删除数据库中不在当前好友列表中的记录
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	deletionFilter := bson.M{"id": bson.M{"$nin": currentFriendIDs}}
+	deleteResult, err := collection.DeleteMany(ctx, deletionFilter)
+	if err != nil {
+		zlog.Error("删除非好友记录失败", zap.Error(err))
+	} else {
+		zlog.Info("已删除非好友记录", zap.Int64("count", deleteResult.DeletedCount))
 	}
 }
 
