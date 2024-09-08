@@ -12,8 +12,9 @@
 ## 快速开始
 
 确保您的系统中已安装 Docker
-### 使用 Bash 脚本启动
 
+`用户名: admin 密码: Aides123.`
+### 使用 Bash 脚本启动
 
 ```bash
 curl -sL https://raw.githubusercontent.com/tongque0/1aides/main/start.sh -o start.sh && chmod +x start.sh && ./start.sh
