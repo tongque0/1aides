@@ -5,15 +5,14 @@
         <!-- 左侧计划任务列表 -->
         <div class="col-md-6">
             <h2 class="my-4">计划任务列表</h2>
-            <ul class="list-group">
-                <!-- 在这里动态加载计划任务 -->
+            <ul class="list-group" id="taskList">
                 {{ range .PlanTasks }}
-                <li class="list-group-item">
+                <li class="list-group-item" id="task-{{ .ID }}">
                     <strong>任务类型:</strong> {{ .TaskType }} <br>
                     <strong>任务时间:</strong> {{ .TaskTime }} <br>
                     <strong>内容详情:</strong> {{ .Content.Detail }} <br>
                     <strong>接收对象:</strong> {{ range .Recipients }}{{ .ID }} {{ end }} <br>
-                    <a href="/delete_plan?id={{ .ID }}" class="btn btn-danger btn-sm mt-2">删除</a>
+                    <button class="btn btn-danger btn-sm delete-plan-button" data-plan-id="{{ .ID }}">删除</button>
                 </li>
                 {{ end }}
             </ul>
@@ -22,8 +21,7 @@
         <!-- 右侧添加计划任务表单 -->
         <div class="col-md-6">
             <h2 class="my-4">添加计划任务</h2>
-            <form action="/add_plan" method="POST">
-                <!-- 任务类型 -->
+            <form id="addPlanForm" action="/plan/add" method="POST">
                 <div class="form-group">
                     <label for="taskType">任务类型</label>
                     <select id="taskType" name="taskType" class="form-control" required>
@@ -32,14 +30,12 @@
                     </select>
                 </div>
 
-                <!-- 定时任务时间 (Cron 表达式) -->
-                <div class="form-group mt-3">
+                <div class="form-group">
                     <label for="taskTime">任务时间 (Cron 表达式)</label>
-                    <input type="text" id="taskTime" name="taskTime" class="form-control" placeholder="例如：0 0 * * * ?" required>
+                    <input type="text" id="taskTime" name="taskTime" class="form-control" placeholder="例如：0 0 * * * *" required>
                 </div>
 
-                <!-- 任务内容 -->
-                <div class="form-group mt-3">
+                <div class="form-group">
                     <label for="contentType">内容类型</label>
                     <select id="contentType" name="contentType" class="form-control" required>
                         <option value="text">文本</option>
@@ -48,22 +44,57 @@
                         <option value="voice">语音</option>
                     </select>
                 </div>
-                <div class="form-group mt-3">
+
+                <div class="form-group">
                     <label for="contentDetail">内容详情</label>
                     <textarea id="contentDetail" name="contentDetail" class="form-control" rows="3" required></textarea>
                 </div>
 
-                <!-- 接收任务通知的对象列表 -->
-                <div class="form-group mt-3">
+                <div class="form-group">
                     <label for="recipients">接收对象</label>
                     <input type="text" id="recipients" name="recipients" class="form-control" placeholder="请输入对象ID，多个ID用逗号分隔" required>
                 </div>
 
-                <!-- 提交按钮 -->
-                <button type="submit" class="btn btn-primary mt-4">添加任务</button>
+                <button type="submit" class="btn btn-primary">添加任务</button>
             </form>
         </div>
     </div>
 </div>
 
 {{ template "footer" . }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addPlanForm = document.getElementById('addPlanForm');
+    addPlanForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(addPlanForm);
+        axios.post('/plan/add', new URLSearchParams(formData))
+            .then(function(response) {
+                alert('任务添加成功');
+                window.location.reload(); // 或者动态更新任务列表
+            })
+            .catch(function(error) {
+                console.error('添加任务失败:', error);
+                alert('任务添加失败，请检查输入');
+            });
+    });
+
+    document.querySelectorAll('.delete-plan-button').forEach(button => {
+        button.addEventListener('click', function(event) {
+            const planId = this.getAttribute('data-plan-id');
+            axios.post('/plan/delete', 'id=' + planId)
+                .then(function(response) {
+                    alert('任务删除成功');
+                    document.getElementById('task-' + planId).remove(); // 动态移除任务项
+                })
+                .catch(function(error) {
+                    console.error('删除任务失败:', error);
+                    alert('任务删除失败');
+                });
+        });
+    });
+});
+</script>
+
+

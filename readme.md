@@ -8,12 +8,26 @@
 [![ClosedIssue](https://img.shields.io/github/issues-closed/tongque0/1aides)](https://github.com/tongque0/1aides/issues?q=is%3Aissue+is%3Aclosed)
 ![Stars](https://img.shields.io/github/stars/tongque0/1aides)
 
+
 ## 快速开始
 
-要启动该微信机器人，只需进入 `deploy` 目录并运行以下命令：
+确保您的系统中已安装 Docker
+### 使用 Bash 脚本启动
+
+
 ```bash
-cd deploy && docker-compose up -d
+curl -sL https://raw.githubusercontent.com/tongque0/1aides/main/start.sh -o start.sh && chmod +x start.sh && ./start.sh
 ```
+
+### 使用 Docker Compose 启动
+
+要通过 Docker Compose 启动服务，请先下载 `/deploy目录`下`docker-compose.yaml` 文件，然后使用 Docker Compose 来启动服务。执行以下步骤：
+
+   ```bash
+   docker-compose up -d
+   ```
+
+
 
 ## 特点
 

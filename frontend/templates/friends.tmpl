@@ -7,6 +7,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>昵称</th>
                 <th>备注</th>
                 <th>权限</th>
@@ -16,6 +17,7 @@
         <tbody>
             {{ range .Friends }}
             <tr id="friend-{{ .ID }}">
+                <td>{{.ID}}</td>
                 <td>{{ .NickName }}</td>
                 <td>{{ .RemarkName }}</td>
                 <td id="permission-status-{{ .ID }}">
