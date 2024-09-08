@@ -58,4 +58,4 @@ docker run -d --name 1aides \
   --volume 1aides_logs:/logs \
   serverless-100026543835-docker.pkg.coding.net/1aides/1aides/1aides:latest
 
-echo "Services are up and running!"
+echo "Services are up and running!!"
