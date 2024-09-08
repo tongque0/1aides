@@ -68,3 +68,4 @@ docker run -d --name 1aides \
 echo -e "\e[1;32m服务已启动并运行！\e[0m"
 echo -e "\e[1;35m1Aides 服务成功启动！\e[0m"
 echo ""
+echo ""
