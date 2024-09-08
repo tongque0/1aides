@@ -52,6 +52,7 @@ docker run -d --name 1aides \
   -e MONGO_USER=aides \
   -e MONGO_PASSWORD=dGhpcyBpcyBhaWRlcw== \
   -e MONGO_HOST=mongo \
+  -e GIN_MODE=release \
   --restart always \
   --network aides-network \
   --volume 1aides_logs:/logs \
